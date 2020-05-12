@@ -1,0 +1,186 @@
+IBM 데이터 이탈률에 영향을 주는 데이터
+
+PCA - 사용불가 
+
+단순히 주성분 분석이라기 보다는 주성분이 될 수 있는 형태로 기존의 데이터에 변환을 가하는
+것이기 때문이다. 따라서 원래 가지고 있는 속성이 중요한 경우 PCA를 사용할 수 없다.
+
+
+
+
+
+#code
+
+"""
+# IBM HR Data-Set
+
+<전처리>
+1. 데이터 로드
+2. 데이터 탐색
+3. 카테고리컬 데이터 분류
+
+<분석>
+0. 기초 통계 분석
+1. 상관계수 히트맵으로 기초 데이터 분
+3. 로지스틱 회귀
+4. 통계적 결론 내리기 (데분프 에서만 해당)
+
+
+"""
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn import preprocessing
+
+# Attrition 
+# True == 1 False == 0
+
+# load dataset
+HR = pd.read_csv("C:/project-IBM/data/WA_Fn-UseC_-HR-Employee-Attrition.csv")
+HR.info()
+HR.describe()
+
+# drop one data type columns 
+HR.drop(['EmployeeCount', 'EmployeeNumber', 'Over18', 'StandardHours'], axis="columns", inplace=True)
+
+
+# categorical colmuns
+cate_col = []
+for i, col in enumerate(HR.columns):
+    if HR[col].dtype == object:
+        cate_col.append(col)
+        print("[{}]".format(i+1), end=' ')
+        print(col, HR[col].unique())
+        print()
+        
+
+# numerical columns
+num_col = []
+for i, col in enumerate(HR.columns):
+    if HR[col].dtype != object:
+        num_col.append(col)
+        print("[{}]".format(i+1), end=' ')
+        print(col, HR[col].unique())
+        print()
+        
+
+enc = preprocessing.LabelEncoder()
+HR["Attrition"] = enc.fit_transform(HR.Attrition)
+
+enc = preprocessing.LabelEncoder()
+for i in range(31):
+    sample = HR.iloc[1, i]
+    if str(sample).isdigit():
+        continue
+    else:
+        out_enc = enc.fit_transform(HR.iloc[:, i])
+        HR.iloc[:, i] = out_enc
+
+
+
+
+HR.index.name = 'record'
+# =====================================================
+# Visualization
+# =====================================================
+
+# find correlation with pandas ".corr()"
+cor = HR.corr() # 상관계수
+
+# visualize with Seaborn heat map, color map = Blues
+plt.figure(figsize=(40, 30))
+sns.heatmap(abs(cor), annot = False, cmap = plt.cm.Blues)
+plt.tight_layout()
+plt.show()
+
+
+# get correlation values with target variable
+cor_target = abs(cor["Attrition"])
+print(cor_target)
+
+
+# choose features above threshold 0.15
+selected_cols = cor_target[cor_target > 0.15]
+print("correlation > 0.15")
+print(selected_cols)
+selected_cols.index
+
+# filter in the selected features
+HR_sel = HR[selected_cols.index]
+print(HR_sel.head())
+
+
+
+plt.figure(figsize=(30, 30))
+for i, column in enumerate(num_col, 1):
+    plt.subplot(6, 4, i)
+    HR[HR["Attrition"] == 0][column].hist(bins=35, color='green', label='Attrition = NO',alpha=0.5)
+    HR[HR["Attrition"] == 1][column].hist(bins=35, color='red', label='Attrition = YES',alpha=0.5)
+    plt.legend()
+    plt.xlabel(column)
+
+
+plt.figure(figsize=(25, 25))
+for i, column in enumerate(cate_col, 1):
+    plt.subplot(2, 4, i)
+    HR[HR["Attrition"] == 0][column].hist(bins=35, color='green', label='Attrition = NO',alpha=0.5)
+    HR[HR["Attrition"] == 1][column].hist(bins=35, color='red', label='Attrition = YES',alpha=0.5)
+    plt.legend()
+    plt.xlabel(column)
+
+plt.tight_layout()
+
+# =====================================================
+# logistic regression
+# =====================================================
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+
+X = HR.drop('Attrition', axis=1)
+y = HR['Attrition']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y)
+
+scaler = StandardScaler()
+X_train_std = scaler.fit_transform(X_train)
+X_test_std = scaler.transform(X_test)
+X_std = scaler.transform(X)
+
+
+
+model_all = LogisticRegression()
+model_all.fit(X_train_std, y_train)
+
+
+
+print(model_all.score(X_train_std, y_train))
+print(model_all.score(X_test_std, y_test))
+
+
+print(model_all.coef_)
+
+#### top 5 featrues
+
+X_sel = HR_sel.drop('Attrition', axis=1)
+y_sel = HR_sel['Attrition']
+
+X_train_sel, X_test_sel, y_train_sel, y_test_sel = train_test_split(
+    X_sel, y_sel)
+
+sel_scaler = StandardScaler()
+X_train_sel_std = sel_scaler.fit_transform(X_train_sel)
+X_test_sel_std = sel_scaler.transform(X_test_sel)
+
+
+model_sel = LogisticRegression()
+model_sel.fit(X_train_sel_std, y_train_sel)
+
+
+print(model_sel.score(X_train_sel_std, y_train_sel))
+print(model_sel.score(X_test_sel_std, y_test_sel))
+
+
+print(model_sel.coef_)
+print(HR_sel)
+
