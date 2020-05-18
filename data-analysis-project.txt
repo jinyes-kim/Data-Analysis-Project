@@ -10,7 +10,6 @@ PCA - 사용불가
 
 
 #code
-
 """
 # IBM HR Data-Set
 
@@ -35,10 +34,6 @@ from sklearn import preprocessing
 # Attrition 
 # True == 1 False == 0
 
-
-# =====================================================
-# load data
-# =====================================================
 # load dataset
 HR = pd.read_csv("C:/project-IBM/data/WA_Fn-UseC_-HR-Employee-Attrition.csv")
 HR.index.name = 'record'
@@ -55,8 +50,10 @@ print(HR.columns, len(HR.columns))
 
 
 # =====================================================
-# preprocessing
+# Visualization
 # =====================================================
+
+
 
 # numerical columns
 num_col = []
@@ -82,11 +79,10 @@ print(HR)
 
 
 
-# 
+# 종속 변수의 개수가 다르므로 밀도를 이용해서 비교
 sns.countplot(HR['Attrition'])
 
-
-# label encoding - 'Attrition'
+# label encoding
 enc = preprocessing.LabelEncoder()
 HR["Attrition"] = enc.fit_transform(HR.Attrition)
 num_col.append('Attrition')
@@ -94,11 +90,7 @@ print(num_col)
 
 
 
-# =====================================================
-# Visualization
-# =====================================================
-
-# histogram - numeric datas
+# numeric datas
 plt.figure(figsize=(40, 40))
 for i, column in enumerate(num_col, 1):
     plt.subplot(6, 4, i)
@@ -111,7 +103,7 @@ plt.tight_layout()
 plt.show()
 
 
-# histogram - categorical data 
+# categorical data
 plt.figure(figsize=(30, 30))
 for i, column in enumerate(cate_col, 1):
     plt.subplot(2, 4, i)
@@ -127,7 +119,7 @@ plt.show()
 
 
 # =====================================================
-# select categorical data & transofrm to dummy
+# tranform categorical data
 # =====================================================
 
 # dummy variable for categorical features
@@ -157,7 +149,7 @@ print(HR.columns, len(HR.columns))
 
 
 # =====================================================
-# Corrleation & 
+# Corrleation
 # =====================================================
 
 # find correlation with pandas ".corr()"
@@ -177,8 +169,16 @@ print(cor_target)
 cor_target = abs(cor["Attrition"]) 
 
 
+"""
+Monthly Income 
+속성이 중요할 것이라고 생각했는데,
+해당 속성을 제외하고 모델을 학습하더라고
+스코어에 큰 영향이 없다.
+
+"""
+
 # choose features above threshold 0.16
-selected_cols = cor_target[cor_target > 0.16]
+selected_cols = cor_target[cor_target > 0.20]
 print("correlation > 0.16")
 print(selected_cols)
 selected_cols = selected_cols.drop('OverTime_No')
@@ -187,12 +187,16 @@ selected_cols.index
 
 # filter in the selected features
 HR_sel = HR[selected_cols.index]
-print("select features")
-print(HR_sel.head())
+print("\n\n*select features")
+print(HR_sel.columns)
+
 
     
     
-    
+"""
+로지스틱 회귀 스코어가 이상함
+
+"""
 # =====================================================
 # logistic regression
 # =====================================================
@@ -224,8 +228,8 @@ print("test- set", model_all.score(X_test_std, y_test))
 
 print(model_all.coef_)
 
-#### top 5 featrues
 
+#### top 5 featrues
 X_sel = HR_sel.drop('Attrition', axis=1)
 y_sel = HR_sel['Attrition']
 
