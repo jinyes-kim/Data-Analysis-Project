@@ -169,20 +169,29 @@ print(cor_target)
 cor_target = abs(cor["Attrition"]) 
 
 
+
 """
 Monthly Income 
 속성이 중요할 것이라고 생각했는데,
 해당 속성을 제외하고 모델을 학습하더라고
 스코어에 큰 영향이 없다.
 
-"""
+로지스틱 회귀 점수가 이상함.. 여기서부터 수정 
 
+"""
 # choose features above threshold 0.16
-selected_cols = cor_target[cor_target > 0.20]
+
+selected_cols = cor_target[cor_target > 0.76]
+selected_cols['WorkLifeBalance'] = HR['WorkLifeBalance']
+#selected_cols = cor_target[cor_target < 0.05]
+
 print("correlation > 0.16")
 print(selected_cols)
-selected_cols = selected_cols.drop('OverTime_No')
+#selected_cols = selected_cols.drop('OverTime_No')
 selected_cols.index
+
+#스코어 확인용 데이터
+selected_cols['Attrition'] = HR['Attrition']
 
 
 # filter in the selected features
@@ -217,13 +226,13 @@ X_std = scaler.transform(X)
 
 
 model_all = LogisticRegression()
-model_all.fit(X_train_std, y_train)
+model_all.fit(X_train, y_train)
 
 
 
 print("<Logistic Regression Score - All features>\n")
-print("train-set", model_all.score(X_train_std, y_train))
-print("test- set", model_all.score(X_test_std, y_test))
+print("train-set", model_all.score(X_train, y_train))
+print("test- set", model_all.score(X_test, y_test))
 
 
 print(model_all.coef_)
@@ -236,21 +245,49 @@ y_sel = HR_sel['Attrition']
 X_train_sel, X_test_sel, y_train_sel, y_test_sel = train_test_split(
     X_sel, y_sel)
 
+"""
 sel_scaler = StandardScaler()
 X_train_sel_std = sel_scaler.fit_transform(X_train_sel)
 X_test_sel_std = sel_scaler.transform(X_test_sel)
 X_sel_std = sel_scaler.transform(X_sel)
+"""
+
 
 model_sel = LogisticRegression()
-model_sel.fit(X_train_sel_std, y_train_sel)
+model_sel.fit(X_train_sel, y_train_sel)
+print(X_train_sel, y_train_sel)
 
 
 print("<Logistic Regression Score - 5 features>\n")
-print("train-set", model_sel.score(X_train_sel_std, y_train_sel))
-print("test- set", model_sel.score(X_test_sel_std, y_test_sel))
+print("train-set", model_sel.score(X_train_sel, y_train_sel))
+print("test- set", model_sel.score(X_test_sel, y_test_sel))
 
 
 print("\n\n<weight>")
 print(model_sel.coef_)
 print(selected_cols)
 
+
+###############################
+# 각 데이터들의 p-value
+#############################
+x = HR.drop('Attrition', axis=1)
+y = HR['Attrition']
+
+
+from sklearn import metrics
+import statsmodels.api as sm
+ 
+log_reg = LogisticRegression()
+log_reg.fit(X_train, y_train)
+ 
+x2 = sm.add_constant(x)
+model = sm.OLS(y, x2)
+result = model.fit()
+print(result.summary())
+ 
+y_pred = log_reg.predict(X_test)
+print(y_pred)
+print(list(y_test))
+ 
+print('정확도 :', metrics.accuracy_score(y_test, y_pred))
