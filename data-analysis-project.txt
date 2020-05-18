@@ -1,4 +1,4 @@
-IBM 데이터 이탈률에 영향을 주는 데이터
+직원 이탈에 영향을 주는 데이터
 
 PCA - 사용불가 
 
@@ -14,19 +14,19 @@ PCA - 사용불가
 """
 # IBM HR Data-Set
 
-<전처리>
+<process>
 1. 데이터 로드
 2. 데이터 탐색
-3. 카테고리컬 데이터 분류
-
-<분석>
-0. 기초 통계 분석
-1. 상관계수 히트맵으로 기초 데이터 분
-3. 로지스틱 회귀
-4. 통계적 결론 내리기 (데분프 에서만 해당)
+3. 카테고리컬 데이터 시각화 & 셀렉션
+4. 더미 변수로 추가하기 (절편에 영향을 준다)
+5. 히트맵으로 상관계수 살펴보기
+6. 상관계수 기반으로 피쳐 셀렉션
+7. 로지스틱 회귀
 
 
 """
+
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -35,24 +35,28 @@ from sklearn import preprocessing
 # Attrition 
 # True == 1 False == 0
 
+
+# =====================================================
+# load data
+# =====================================================
 # load dataset
 HR = pd.read_csv("C:/project-IBM/data/WA_Fn-UseC_-HR-Employee-Attrition.csv")
+HR.index.name = 'record'
 HR.info()
 HR.describe()
 
 # drop one data type columns 
-HR.drop(['EmployeeCount', 'EmployeeNumber', 'Over18', 'StandardHours'], axis="columns", inplace=True)
+HR.drop(['EmployeeCount', 'EmployeeNumber', 'Over18', 'StandardHours'],
+        axis="columns", inplace=True)
 
 
-# categorical colmuns
-cate_col = []
-for i, col in enumerate(HR.columns):
-    if HR[col].dtype == object:
-        cate_col.append(col)
-        print("[{}]".format(i+1), end=' ')
-        print(col, HR[col].unique())
-        print()
-        
+print(HR.columns, len(HR.columns))
+
+
+
+# =====================================================
+# preprocessing
+# =====================================================
 
 # numerical columns
 num_col = []
@@ -63,29 +67,102 @@ for i, col in enumerate(HR.columns):
         print(col, HR[col].unique())
         print()
         
+        
+# categorical colmuns 
+cate_col = []
+for i, col in enumerate(HR.columns):
+    if HR[col].dtype == object:
+        cate_col.append(col)
+        print("[{}]".format(i+1), end=' ')
+        print(col, HR[col].unique())
+        print()
+        
 
+print(HR)
+
+
+
+# 
+sns.countplot(HR['Attrition'])
+
+
+# label encoding - 'Attrition'
 enc = preprocessing.LabelEncoder()
 HR["Attrition"] = enc.fit_transform(HR.Attrition)
-
-enc = preprocessing.LabelEncoder()
-for i in range(31):
-    sample = HR.iloc[1, i]
-    if str(sample).isdigit():
-        continue
-    else:
-        out_enc = enc.fit_transform(HR.iloc[:, i])
-        HR.iloc[:, i] = out_enc
+num_col.append('Attrition')
+print(num_col)
 
 
 
-
-HR.index.name = 'record'
 # =====================================================
 # Visualization
 # =====================================================
 
+# histogram - numeric datas
+plt.figure(figsize=(40, 40))
+for i, column in enumerate(num_col, 1):
+    plt.subplot(6, 4, i)
+    HR[HR["Attrition"] == 0][column].hist(bins=35, color='green', label='Attrition = NO',alpha=0.5, density=True)
+    HR[HR["Attrition"] == 1][column].hist(bins=35, color='red', label='Attrition = YES',alpha=0.5, density=True)
+    plt.legend()
+    plt.xlabel(column)
+
+plt.tight_layout()
+plt.show()
+
+
+# histogram - categorical data 
+plt.figure(figsize=(30, 30))
+for i, column in enumerate(cate_col, 1):
+    plt.subplot(2, 4, i)
+    HR[HR["Attrition"] == 0][column].hist(bins=35, color='green', label='Attrition = NO',alpha=0.5, density=True)
+    HR[HR["Attrition"] == 1][column].hist(bins=35, color='red', label='Attrition = YES',alpha=0.5, density=True)
+    plt.legend()
+    plt.xlabel(column)
+
+
+plt.tight_layout()
+plt.show()
+
+
+
+# =====================================================
+# select categorical data & transofrm to dummy
+# =====================================================
+
+# dummy variable for categorical features
+print(pd.get_dummies(HR['MaritalStatus'] ))
+marital_dummy = pd.get_dummies(HR['MaritalStatus'])
+overTime_dummy =  pd.get_dummies(HR['OverTime'])
+
+print(marital_dummy)
+print(overTime_dummy)
+
+
+for col in HR.columns:
+    if HR[col].dtype != object or col == 'Attrition':
+        continue
+    else:
+        HR.drop(col, axis="columns", inplace=True)
+    
+    
+print(HR.columns, len(HR.columns))
+
+
+HR = HR.join(marital_dummy.add_prefix('Marital_'))
+HR = HR.join(overTime_dummy.add_prefix('OverTime_'))
+print(HR.columns, len(HR.columns))
+
+
+
+
+# =====================================================
+# Corrleation & 
+# =====================================================
+
 # find correlation with pandas ".corr()"
 cor = HR.corr() # 상관계수
+
 
 # visualize with Seaborn heat map, color map = Blues
 plt.figure(figsize=(40, 30))
@@ -95,45 +172,27 @@ plt.show()
 
 
 # get correlation values with target variable
-cor_target = abs(cor["Attrition"])
+cor_target = cor["Attrition"]
 print(cor_target)
+cor_target = abs(cor["Attrition"]) 
 
 
-# choose features above threshold 0.15
+# choose features above threshold 0.16
 selected_cols = cor_target[cor_target > 0.16]
 print("correlation > 0.16")
 print(selected_cols)
+selected_cols = selected_cols.drop('OverTime_No')
 selected_cols.index
+
 
 # filter in the selected features
 HR_sel = HR[selected_cols.index]
 print("select features")
 print(HR_sel.head())
 
-
-
-# numeric data
-plt.figure(figsize=(30, 30))
-for i, column in enumerate(num_col, 1):
-    plt.subplot(6, 4, i)
-    HR[HR["Attrition"] == 0][column].hist(bins=35, color='green', label='Attrition = NO',alpha=0.5)
-    HR[HR["Attrition"] == 1][column].hist(bins=35, color='red', label='Attrition = YES',alpha=0.5)
-    plt.legend()
-    plt.xlabel(column)
-
-
-# categorical data
-plt.figure(figsize=(25, 25))
-for i, column in enumerate(cate_col, 1):
-    plt.subplot(2, 4, i)
-    HR[HR["Attrition"] == 0][column].hist(bins=35, color='green', label='Attrition = NO',alpha=0.5)
-    HR[HR["Attrition"] == 1][column].hist(bins=35, color='red', label='Attrition = YES',alpha=0.5)
-    plt.legend()
-    plt.xlabel(column)
-
-plt.tight_layout()
-
-
+    
+    
+    
 # =====================================================
 # logistic regression
 # =====================================================
@@ -187,8 +246,7 @@ print("train-set", model_sel.score(X_train_sel_std, y_train_sel))
 print("test- set", model_sel.score(X_test_sel_std, y_test_sel))
 
 
-print("<weight>\n")
+print("\n\n<weight>")
 print(model_sel.coef_)
 print(selected_cols)
-
 
