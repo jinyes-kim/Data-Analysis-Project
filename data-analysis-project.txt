@@ -6,6 +6,9 @@ PCA - 사용불가
 것이기 때문이다. 따라서 원래 가지고 있는 속성이 중요한 경우 PCA를 사용할 수 없다.
 
 
+# 1. 로지스틱 회귀 스코어가 별 차이가 없는 점이 왜 그런지?
+# 2. presicion, recall, f1 score의 의미
+# 3. 
 
 
 
@@ -170,15 +173,6 @@ cor_target = abs(cor["Attrition"])
 
 
 
-"""
-Monthly Income 
-속성이 중요할 것이라고 생각했는데,
-해당 속성을 제외하고 모델을 학습하더라고
-스코어에 큰 영향이 없다.
-
-로지스틱 회귀 점수가 이상함.. 여기서부터 수정 
-
-"""
 # choose features above threshold 0.16
 
 selected_cols = cor_target[cor_target > 0.76]
@@ -201,11 +195,6 @@ print(HR_sel.columns)
 
 
     
-    
-"""
-로지스틱 회귀 스코어가 이상함
-
-"""
 # =====================================================
 # logistic regression
 # =====================================================
@@ -224,10 +213,8 @@ X_test_std = scaler.transform(X_test)
 X_std = scaler.transform(X)
 
 
-
 model_all = LogisticRegression()
 model_all.fit(X_train, y_train)
-
 
 
 print("<Logistic Regression Score - All features>\n")
@@ -266,6 +253,7 @@ print("test- set", model_sel.score(X_test_sel, y_test_sel))
 print("\n\n<weight>")
 print(model_sel.coef_)
 print(selected_cols)
+
 
 
 ###############################
