@@ -1,18 +1,3 @@
-직원 이탈에 영향을 주는 데이터
-
-PCA - 사용불가 
-
-단순히 주성분 분석이라기 보다는 주성분이 될 수 있는 형태로 기존의 데이터에 변환을 가하는
-것이기 때문이다. 따라서 원래 가지고 있는 속성이 중요한 경우 PCA를 사용할 수 없다.
-
-
-# 1. 로지스틱 회귀 스코어가 별 차이가 없는 점이 왜 그런지?
-# 2. presicion, recall, f1 score의 의미
-# 3. 
-
-
-
-#code
 """
 Monthly Income 
 속성이 중요할 것이라고 생각했는데,
@@ -107,13 +92,12 @@ for i, column in enumerate(num_col, 1):
     plt.legend()
     plt.xlabel(column)
 
-plt.tight_layout()
 
 
 # categorical data
-plt.figure(figsize=(30, 30))
+plt.figure(figsize=(40, 40))
 for i, column in enumerate(cate_col, 1):
-    plt.subplot(2, 4, i)
+    plt.subplot(4, 2, i)
     HR[HR["Attrition"] == 0][column].hist(bins=35, color='green', label='Attrition = NO',alpha=0.5, density=True)
     HR[HR["Attrition"] == 1][column].hist(bins=35, color='red', label='Attrition = YES',alpha=0.5, density=True)
     plt.legend()
@@ -129,9 +113,9 @@ plt.tight_layout()
 # =====================================================
 
 # dummy variable for categorical features
-print(pd.get_dummies(HR['MaritalStatus'] ))
 marital_dummy = pd.get_dummies(HR['MaritalStatus'])
 overTime_dummy =  pd.get_dummies(HR['OverTime'])
+role_dummy = pd.get_dummies(HR['JobRole'])
 
 print(marital_dummy)
 print(overTime_dummy)
@@ -149,6 +133,7 @@ print(HR.columns, len(HR.columns))
 
 HR = HR.join(marital_dummy.add_prefix('Marital_'))
 HR = HR.join(overTime_dummy.add_prefix('OverTime_'))
+HR = HR.join(role_dummy.add_prefix('jobRole_'))
 print(HR.columns, len(HR.columns))
 
 
@@ -255,11 +240,11 @@ rlm(HR_sel, '5 features')
 # =====================================================
 
 selected_cols = selected_cols.drop('TotalWorkingYears')
-#selected_cols = selected_cols.drop('YearsInCurrentRole')
+selected_cols = selected_cols.drop('YearsInCurrentRole')
 #selected_cols = selected_cols.drop('JobLevel')
-selected_cols['EnvironmentSatisfaction'] = HR['EnvironmentSatisfaction']
-selected_cols['JobSatisfaction'] = HR['JobSatisfaction']
-selected_cols['DistanceFromHome'] = HR['DistanceFromHome']
+#selected_cols['EnvironmentSatisfaction'] = HR['EnvironmentSatisfaction']
+#selected_cols['JobSatisfaction'] = HR['JobSatisfaction']
+#selected_cols['DistanceFromHome'] = HR['DistanceFromHome']
 
 
 
@@ -270,7 +255,3 @@ rlm(result, 'optimize')
 #JobSatisfaction 
 #JobInvolvement 
 #DistanceFromHome 
-
-
-
-
