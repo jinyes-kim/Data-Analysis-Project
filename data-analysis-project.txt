@@ -240,11 +240,12 @@ rlm(HR_sel, '5 features')
 # =====================================================
 
 selected_cols = selected_cols.drop('TotalWorkingYears')
-selected_cols = selected_cols.drop('YearsInCurrentRole')
-#selected_cols = selected_cols.drop('JobLevel')
+#selected_cols = selected_cols.drop('YearsInCurrentRole')
+selected_cols = selected_cols.drop('JobLevel')
 #selected_cols['EnvironmentSatisfaction'] = HR['EnvironmentSatisfaction']
 #selected_cols['JobSatisfaction'] = HR['JobSatisfaction']
-#selected_cols['DistanceFromHome'] = HR['DistanceFromHome']
+#selected_cols['MonthlyIncome'] = HR['MonthlyIncome']
+#selected_cols['Age'] = HR['Age']
 
 
 
