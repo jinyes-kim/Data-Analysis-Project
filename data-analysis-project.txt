@@ -21,7 +21,7 @@ Monthly Income
 
 """
 
-
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -116,6 +116,10 @@ plt.tight_layout()
 marital_dummy = pd.get_dummies(HR['MaritalStatus'])
 overTime_dummy =  pd.get_dummies(HR['OverTime'])
 role_dummy = pd.get_dummies(HR['JobRole'])
+busi_dummy = pd.get_dummies(HR['BusinessTravel'])
+depart_dummy = pd.get_dummies(HR['Department'])
+edu_dummy = pd.get_dummies(HR['EducationField'])
+gender_dummy = pd.get_dummies(HR['Gender'])
 
 print(marital_dummy)
 print(overTime_dummy)
@@ -134,6 +138,10 @@ print(HR.columns, len(HR.columns))
 HR = HR.join(marital_dummy.add_prefix('Marital_'))
 HR = HR.join(overTime_dummy.add_prefix('OverTime_'))
 HR = HR.join(role_dummy.add_prefix('jobRole_'))
+HR = HR.join(busi_dummy.add_prefix('BusinessTrabel_'))
+HR = HR.join(depart_dummy.add_prefix('department_'))
+HR = HR.join(edu_dummy.add_prefix('EduField_'))
+HR = HR.join(gender_dummy.add_prefix('Gender_'))
 print(HR.columns, len(HR.columns))
 
 
@@ -191,7 +199,7 @@ from sklearn.metrics import classification_report
 import statsmodels.api as sm
 
 
-def rlm(data, msg):
+def lrm(data, msg):
     X = data.drop('Attrition', axis=1)
     y = data['Attrition']
     X_train, X_test, y_train, y_test = train_test_split(X, y)
@@ -220,7 +228,7 @@ def rlm(data, msg):
 # =====================================================
 # logistic regression report - All features
 # =====================================================
-rlm(HR, 'All features')
+lrm(HR, 'All features')
  
 
 
@@ -229,7 +237,7 @@ rlm(HR, 'All features')
 # =====================================================
 
 #### top 5 featrues
-rlm(HR_sel, '5 features')
+lrm(HR_sel, '5 features')
  
 
 
@@ -250,9 +258,4 @@ selected_cols = selected_cols.drop('JobLevel')
 
 
 result = HR[selected_cols.index]
-rlm(result, 'optimize')
-
-#EnvironmentSatisfaction
-#JobSatisfaction 
-#JobInvolvement 
-#DistanceFromHome 
+lrm(result, 'optimize')
