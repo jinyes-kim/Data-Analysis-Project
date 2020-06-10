@@ -82,7 +82,7 @@ HR["Attrition"] = enc.fit_transform(HR.Attrition)
 num_col.append('Attrition')
 print(num_col)
 
-
+"""
 # numeric datas
 plt.figure(figsize=(40, 40))
 for i, column in enumerate(num_col, 1):
@@ -105,7 +105,7 @@ for i, column in enumerate(cate_col, 1):
 
 
 plt.tight_layout()
-
+"""
 
 
 # =====================================================
@@ -172,7 +172,7 @@ cor_target = abs(cor["Attrition"])
 # 상관계수와 전체 변수로 돌린 모델의 p-value로 변수 셀렉션
 # choose features above threshold 0.16
 
-selected_cols = cor_target[cor_target > 0.16]
+selected_cols = cor_target[cor_target > 0.10]
 print("correlation > 0.16")
 print(selected_cols)
 selected_cols = selected_cols.drop('OverTime_No')
@@ -247,13 +247,18 @@ lrm(HR_sel, '5 features')
 # add -EnvironmentSatisfaction
 # =====================================================
 
+# 1차 드롭
+selected_cols = selected_cols.drop('MonthlyIncome')
 selected_cols = selected_cols.drop('TotalWorkingYears')
-#selected_cols = selected_cols.drop('YearsInCurrentRole')
 selected_cols = selected_cols.drop('JobLevel')
-#selected_cols['EnvironmentSatisfaction'] = HR['EnvironmentSatisfaction']
-#selected_cols['JobSatisfaction'] = HR['JobSatisfaction']
-#selected_cols['MonthlyIncome'] = HR['MonthlyIncome']
-#selected_cols['Age'] = HR['Age']
+selected_cols = selected_cols.drop('StockOptionLevel')
+selected_cols = selected_cols.drop('BusinessTrabel_Travel_Frequently')
+selected_cols = selected_cols.drop('YearsWithCurrManager')
+
+
+# 변수 추가
+selected_cols['DistanceFromHome'] = HR['DistanceFromHome']
+
 
 
 
