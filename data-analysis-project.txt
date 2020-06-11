@@ -264,3 +264,4 @@ selected_cols['DistanceFromHome'] = HR['DistanceFromHome']
 
 result = HR[selected_cols.index]
 lrm(result, 'optimize')
+
