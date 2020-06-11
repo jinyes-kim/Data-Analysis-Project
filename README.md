@@ -91,9 +91,6 @@ Data-Analysis-Project Class in kyonggi Univ.
 ![슬라이드29](https://user-images.githubusercontent.com/54028026/84378004-6f07cd00-ac1e-11ea-8cac-72f45985b555.PNG)
 --- 
 
-![슬라이드30](https://user-images.githubusercontent.com/54028026/84378009-6f07cd00-ac1e-11ea-81e9-3f06f762c55f.PNG)
---- 
-
 ![슬라이드31](https://user-images.githubusercontent.com/54028026/84378011-6fa06380-ac1e-11ea-834c-06148eaa7e5b.PNG)
 --- 
 
