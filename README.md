@@ -7,7 +7,7 @@
 
 ## Descripton
 Classify critical factor at risk of attrition. 
-Use Logistic Regresstion
+Use Logistic Regression
 
 
 ## PPT
