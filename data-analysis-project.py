@@ -68,9 +68,6 @@ for i, column in enumerate(num_col, 1):
     HR[HR["Attrition"] == 1][column].hist(bins=35, color='red', label='Attrition = YES',alpha=0.5, density=True)
     plt.legend()
     plt.xlabel(column)
-
-
-
 # categorical data
 plt.figure(figsize=(40, 40))
 for i, column in enumerate(cate_col, 1):
@@ -79,8 +76,6 @@ for i, column in enumerate(cate_col, 1):
     HR[HR["Attrition"] == 1][column].hist(bins=35, color='red', label='Attrition = YES',alpha=0.5, density=True)
     plt.legend()
     plt.xlabel(column)
-
-
 plt.tight_layout()
 """
 
@@ -182,9 +177,10 @@ def lrm(data, msg):
     X_train, X_test, y_train, y_test = train_test_split(X, y)
        	   
     scaler = StandardScaler()
+    
     X_train_std = scaler.fit_transform(X_train)
-    X_test_std = scaler.transform(X_test)
-    X_std = scaler.transform(X)
+    X_test_std = scaler.fit_transform(X_test)
+    X_std = scaler.fit_transform(X)
     X_std = pd.DataFrame(X_std, columns = X.columns)
     
     model = LogisticRegression()
@@ -241,4 +237,3 @@ selected_cols['DistanceFromHome'] = HR['DistanceFromHome']
 
 result = HR[selected_cols.index]
 lrm(result, 'optimize')
-
