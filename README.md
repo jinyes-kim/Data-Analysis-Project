@@ -1,7 +1,7 @@
-#### Data-Analysis-Project
 #### Data-Analysis-Project Class in kyonggi Univ.
-# 
-# 
+
+---
+
 ## Subject: Classify employees at risk of attrition 
 
 
