@@ -2,7 +2,7 @@
 
 ---
 
-## Subject: Classify employees at risk of attrition 
+## Subject: Classify critical factor at risk of attrition
 
 
 ## Descripton
