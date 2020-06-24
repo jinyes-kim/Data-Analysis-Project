@@ -1,9 +1,17 @@
 # Data-Analysis-Project
-Data-Analysis-Project Class in kyonggi Univ.
+#### Data-Analysis-Project Class in kyonggi Univ.
+---
+
+# Subject: Classify employees at risk of attrition 
 
 
+## Descripton
+---
+Classify critical factor at risk of attrition. 
+Use Logistic Regresstion
 
-### PPT
+
+## PPT
 --- 
 
 ![슬라이드1](https://user-images.githubusercontent.com/54028026/85497162-7369b800-b618-11ea-8abb-0473857eb942.PNG)
