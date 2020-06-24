@@ -10,7 +10,7 @@
 - Classify critical factor at risk of attrition. 
 - Use Logistic Regression
 　
-### 
+### 　
 ### data: IBM HR data
 - reference - https://www.kaggle.com/pavansubhasht/ibm-hr-analytics-attrition-dataset 
 
