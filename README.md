@@ -2,12 +2,12 @@
 
 
 
-## Subject: Classify critical factor at risk of attrition
+## Subject: Classify critical factor at risk of employee attrition
 
 
 
 ### description
-- Classify critical factor at risk of attrition. 
+- Classify critical factor at risk of employee attrition 
 - Use Logistic Regression
 　
 ### 　
