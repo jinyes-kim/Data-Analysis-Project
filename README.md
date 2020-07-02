@@ -8,7 +8,7 @@
 
 ### description
 - Classify critical factor at risk of employee attrition 
-- Use Logistic Regression
+- Use Machine Learning - Logistic Regression
 　
 ### 　
 ### data: IBM HR data
