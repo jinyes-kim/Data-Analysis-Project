@@ -1,4 +1,8 @@
 # 코드 정리하기
+"""
+솔루션이랑 합치기
+"""
+
 
 import numpy as np
 import pandas as pd
